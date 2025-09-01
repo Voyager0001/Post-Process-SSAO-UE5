@@ -1,3 +1,4 @@
+#include "/Engine/Private/Common.ush"
 const static int RAYQUALITY[4] = { 2, 2, 4, 4};
 const static int STEPQUALITY[4] = { 4, 8, 12, 24};
 
