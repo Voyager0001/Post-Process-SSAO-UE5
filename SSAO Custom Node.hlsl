@@ -7,8 +7,13 @@ const static int StepQuality[4] = { 4, 8, 12, 24};
 float g = 1.220744084605759; //anti banding factor
 float3 AntiBandingVector = rcp(float3(g,g*g,g*g*g));
 float3 SurfaceNormal = SceneTextureLookup(UV, 8, false).rgb * 2 - 1;
+ViewPos+= .002 * SurfaceNormal* length(ViewPos);
+
+if GetDepth(ScreenPosition)>0.99
 		
-float2 OcclusionAccumulator = 0.0;
+float2 OcclusionAccumulator = float2(1.0, 1.0);
+if GetDepth(ScreenPosition)>0.99 return OcclusionAccumulator;
+
 for(int i = 0; i <= TotalSlices * SamplesPerSlice; i++)
 	{
 		float3 SampleRandom = frac(noise + i * AntiBandingVector);
@@ -23,7 +28,7 @@ for(int i = 0; i <= TotalSlices * SamplesPerSlice; i++)
         float HemisphereHeight = 0.2 + SampleRandom.z; // Prevents pole sampling
         
 		float3 SampleOffset = HemisphereHeight *sample_radius * HemisphereDirection;
-        float3 SampleViewPos = view_pos + SampleOffset;
+        float3 SampleViewPos = ViewPos + SampleOffset;
 		float3 SampleScreenPos = GetScreenPos(SampleViewPos);
 		float2 PerspectiveCorrection = SampleOffset.xy / (SampleOffset.z * ScreenResolution);
         float3 CorrectedScreenPosition = SampleScreenPos + float3(PerspectiveCorrection, 0.000001);
